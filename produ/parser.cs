@@ -31,6 +31,7 @@ namespace produ
         public List<Rule> rules = new List<Rule>();
         public List<FinalRule> finalRules = new List<FinalRule>();
         public int firstFacts = 0;
+        public List<string> initialFacts = new List<string>();
         public List<string> finalFacts = new List<string>();
 
         public  void Parse(string filePath)
@@ -51,6 +52,7 @@ namespace produ
                     if (fact != null)
                         facts.Add(fact);
                     firstFacts++;
+                    initialFacts.Add(fact);
                 }
                 else if (trimmedLine.StartsWith("fr-"))
                 {

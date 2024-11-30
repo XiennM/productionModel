@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,12 +14,14 @@ namespace produ
     public partial class Form1 : Form
     {
         bool isForward = true;
+        Parser parser;
+        ProductionModel productionModel;
 
         public Form1()
         {
             InitializeComponent();
             string filePath = @"C:\Users\kseny\Desktop\bd.txt";
-            Parser parser = new Parser(); 
+            parser = new Parser(); 
             parser.Parse(filePath);
 
             for (int i = 0; i < parser.firstFacts; i++) {
@@ -29,6 +32,8 @@ namespace produ
             {
                 finalFactsComboBox.Items.Insert(i, parser.finalFacts[i]);
             }
+
+            productionModel = new ProductionModel(parser);
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
@@ -53,12 +58,35 @@ namespace produ
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if(isForward) { 
-            
+            List<string> initialFacts = new List<string>();
+
+            for (int i = 0; i < factsComboBox.Items.Count; i++)
+            {
+                if(factsComboBox.GetItemChecked(i))
+                {
+                    initialFacts.Add(factsComboBox.Items[i].ToString());
+                }
+            }
+
+            string finalFact = "";
+
+            for (int i = 0; i < finalFactsComboBox.Items.Count; i++)
+            {
+                if (finalFactsComboBox.GetItemChecked(i))
+                {
+                    finalFact = finalFactsComboBox.Items[i].ToString();
+                }
+            }
+
+            if (isForward) {
+
+                var finalFacts = productionModel.ComputeFinalFacts(initialFacts);
+                textBox1.Text += "Финальные факты: " + string.Join(", ", finalFacts);
             }
             else
             {
-
+                var requiredFacts = productionModel.ComputeRequiredFacts(finalFact);
+                textBox1.Text += $"Необходимые аксиомы для {finalFact}: " + string.Join(", ", requiredFacts);
             }
         }
     }
